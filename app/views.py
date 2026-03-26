@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from app.models import UserProfile
 from app.forms import LoginForm
 from werkzeug.security import check_password_hash
+from app.forms import UploadForm
 
 ###
 # Routing for your application.
@@ -24,17 +25,23 @@ def about():
 
 
 @app.route('/upload', methods=['POST', 'GET'])
+@login_required
 def upload():
-    # Instantiate your form class
+    form = UploadForm()
 
-    # Validate file upload on submit
     if form.validate_on_submit():
-        # Get file data and save to your uploads folder
+        file = form.photo.data
 
-        flash('File Saved', 'success')
-        return redirect(url_for('home')) # Update this to redirect the user to a route that displays all uploaded image files
+        # Secure the filename
+        filename = secure_filename(file.filename)
 
-    return render_template('upload.html')
+        # Save file to uploads folder
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+        flash('File successfully uploaded!', 'success')
+        return redirect(url_for('upload'))
+
+    return render_template('upload.html', form=form)
 
 
 @app.route('/login', methods=['POST', 'GET'])
@@ -67,6 +74,13 @@ def login():
             flash('Invalid username or password', 'danger')
 
     return render_template("login.html", form=form)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Logged out successfully.', 'success')
+    return redirect(url_for('login'))
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session
