@@ -7,10 +7,22 @@ from app.models import UserProfile
 from app.forms import LoginForm
 from werkzeug.security import check_password_hash
 from app.forms import UploadForm
+from flask import send_from_directory
 
 ###
 # Routing for your application.
 ###
+def get_uploaded_images():
+    upload_folder = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
+    
+    images = []
+    for root, dirs, files in os.walk(upload_folder):
+        for file in files:
+            images.append(file)
+
+    return images
+
+
 
 @app.route('/')
 def home():
@@ -74,6 +86,20 @@ def login():
             flash('Invalid username or password', 'danger')
 
     return render_template("login.html", form=form)
+
+@app.route('/uploads/<filename>')
+def get_image(filename):
+    return send_from_directory(
+        os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER']),
+        filename
+    )
+
+@app.route('/files')
+@login_required
+def files():
+    images = get_uploaded_images()
+    return render_template('files.html', images=images)
+
 
 @app.route('/logout')
 @login_required
