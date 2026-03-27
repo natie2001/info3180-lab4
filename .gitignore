@@ -21,5 +21,5 @@ venv/
 .flaskenv
 
 # Uploaded files (ignore user uploads)
-app/static/uploads/*
-!app/static/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
