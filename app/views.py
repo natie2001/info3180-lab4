@@ -18,7 +18,8 @@ def get_uploaded_images():
     images = []
     for root, dirs, files in os.walk(upload_folder):
         for file in files:
-            images.append(file)
+            if file.lower().endswith(('.png', '.jpg', '.jpeg')):
+                images.append(file)
 
     return images
 
@@ -33,7 +34,7 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+    return render_template('about.html', name="Nathan Hansle")
 
 
 @app.route('/upload', methods=['POST', 'GET'])
@@ -106,7 +107,7 @@ def files():
 def logout():
     logout_user()
     flash('Logged out successfully.', 'success')
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session

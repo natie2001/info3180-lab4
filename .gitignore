@@ -19,3 +19,7 @@ venv/
 # Environment Variables
 .env
 .flaskenv
+
+# Uploaded files (ignore user uploads)
+app/static/uploads/*
+!app/static/uploads/.gitkeep
